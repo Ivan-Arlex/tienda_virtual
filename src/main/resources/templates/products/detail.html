@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title th:text="${product.name} + ' - TiendaVirtual'">Producto</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/home}">Inicio</a></li>
+      <li class="breadcrumb-item"><a th:href="@{/catalog}">Catálogo</a></li>
+      <li class="breadcrumb-item active" th:text="${product.name}"></li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:350px">
+        <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+             th:src="${product.imageUrl}" class="img-fluid rounded" style="max-height:320px; object-fit:contain" alt=""/>
+        <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+           class="bi bi-box-seam" style="font-size:6rem; color:#ccc"></i>
+      </div>
+    </div>
+
+    <div class="col-md-7">
+      <span class="badge bg-secondary mb-2"
+            th:text="${product.categoryName != null ? product.categoryName : 'Sin categoría'}"></span>
+      <h2 class="fw-bold" th:text="${product.name}"></h2>
+      <p class="text-muted" th:text="${product.description}"></p>
+
+      <div class="d-flex align-items-center gap-3 my-4">
+        <span class="display-6 fw-bold text-primary"
+              th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></span>
+        <span class="badge fs-6"
+              th:classappend="${product.stock > 0 ? 'bg-success' : 'bg-danger'}"
+              th:text="${product.stock > 0 ? 'En stock (' + product.stock + ' disp.)' : 'Agotado'}"></span>
+      </div>
+
+      <sec:authorize access="isAuthenticated()">
+        <form th:action="@{/cart/add}" method="post" class="d-flex gap-3 align-items-center">
+          <input type="hidden" name="productId" th:value="${product.id}"/>
+          <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0 fw-semibold">Cantidad:</label>
+            <input type="number" name="quantity" class="form-control" style="width:90px"
+                   value="1" min="1" th:max="${product.stock}"/>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg"
+                  th:disabled="${product.stock == 0}">
+            <i class="bi bi-cart-plus"></i> Agregar al carrito
+          </button>
+        </form>
+      </sec:authorize>
+
+      <sec:authorize access="isAnonymous()">
+        <div class="alert alert-info mt-3">
+          <a th:href="@{/auth/login}">Inicia sesión</a> para agregar productos al carrito.
+        </div>
+      </sec:authorize>
+
+      <hr class="mt-4"/>
+      <a th:href="@{/catalog}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al catálogo
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-4">
+  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

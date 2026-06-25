@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Registro - TiendaVirtual</title>
+</head>
+<body class="bg-light">
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h4 class="card-title text-center mb-4">
+            <i class="bi bi-person-plus-fill text-primary"></i> Crear Cuenta
+          </h4>
+
+          <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+          <form th:action="@{/auth/register}" method="post" th:object="${registerDto}">
+            <div class="mb-3">
+              <label class="form-label">Nombre completo</label>
+              <input type="text" th:field="*{fullName}" class="form-control"
+                     placeholder="Tu nombre completo" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Usuario</label>
+              <input type="text" th:field="*{username}" class="form-control"
+                     placeholder="Elige un nombre de usuario" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" th:field="*{email}" class="form-control"
+                     placeholder="tu@email.com" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" th:field="*{password}" class="form-control"
+                     placeholder="Mínimo 6 caracteres" required minlength="6"/>
+            </div>
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-person-check"></i> Registrarse
+              </button>
+            </div>
+          </form>
+
+          <hr/>
+          <p class="text-center mb-0 text-muted small">
+            ¿Ya tienes cuenta? <a th:href="@{/auth/login}">Inicia sesión</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

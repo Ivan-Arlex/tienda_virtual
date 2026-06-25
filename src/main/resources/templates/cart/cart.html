@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Carrito - TiendaVirtual</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-4">
+  <h3 class="fw-semibold mb-4"><i class="bi bi-cart3"></i> Mi Carrito</h3>
+
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <div th:if="${cart.items.isEmpty()}" class="text-center py-5">
+    <i class="bi bi-cart-x fs-1 text-muted"></i>
+    <p class="text-muted mt-2">Tu carrito está vacío.</p>
+    <a th:href="@{/catalog}" class="btn btn-primary">Ir al catálogo</a>
+  </div>
+
+  <div th:unless="${cart.items.isEmpty()}" class="row g-4">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Precio</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-center">Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="item : ${cart.items}">
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                         style="width:56px;height:56px;min-width:56px">
+                      <img th:if="${item.productImageUrl != null and !item.productImageUrl.isEmpty()}"
+                           th:src="${item.productImageUrl}" class="img-fluid rounded"
+                           style="max-height:50px; object-fit:contain" alt=""/>
+                      <i th:unless="${item.productImageUrl != null and !item.productImageUrl.isEmpty()}"
+                         class="bi bi-box-seam text-secondary fs-4"></i>
+                    </div>
+                    <div>
+                      <a th:href="@{/products/{id}(id=${item.productId})}"
+                         class="fw-semibold text-dark text-decoration-none"
+                         th:text="${item.productName}"></a>
+                      <div class="small text-muted" th:text="${item.categoryName}"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center"
+                    th:text="${'$' + #numbers.formatDecimal(item.productPrice, 1, 2)}"></td>
+                <td class="text-center" style="width:130px">
+                  <form th:action="@{/cart/update/{id}(id=${item.id})}" method="post"
+                        class="d-flex align-items-center gap-1">
+                    <input type="number" name="quantity" class="form-control form-control-sm text-center"
+                           th:value="${item.quantity}" min="1" th:max="${item.availableStock}"
+                           onchange="this.form.submit()" style="width:65px"/>
+                  </form>
+                </td>
+                <td class="text-center fw-semibold text-primary"
+                    th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></td>
+                <td>
+                  <form th:action="@{/cart/remove/{id}(id=${item.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">Resumen</h5>
+          <hr/>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span>Envío</span>
+            <span class="text-success">Gratis</span>
+          </div>
+          <hr/>
+          <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+            <span>Total</span>
+            <span class="text-primary"
+                  th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}"></span>
+          </div>
+          <a th:href="@{/orders/checkout}" class="btn btn-success w-100 btn-lg">
+            <i class="bi bi-bag-check-fill"></i> Proceder al pago
+          </a>
+          <a th:href="@{/catalog}" class="btn btn-outline-secondary w-100 mt-2">
+            Seguir comprando
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

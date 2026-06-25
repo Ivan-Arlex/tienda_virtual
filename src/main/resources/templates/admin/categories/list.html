@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Categorías - Admin</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-2">
+      <div class="list-group list-group-flush shadow-sm">
+        <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/admin/products}" class="list-group-item list-group-item-action">
+          <i class="bi bi-box-seam"></i> Productos
+        </a>
+        <a th:href="@{/admin/categories}" class="list-group-item list-group-item-action active">
+          <i class="bi bi-tags"></i> Categorías
+        </a>
+        <a th:href="@{/admin/orders}" class="list-group-item list-group-item-action">
+          <i class="bi bi-bag-check"></i> Pedidos
+        </a>
+        <a th:href="@{/home}" class="list-group-item list-group-item-action text-secondary">
+          <i class="bi bi-arrow-left"></i> Tienda
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <h3 class="fw-semibold mb-4">Gestión de Categorías</h3>
+
+      <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <div class="row g-4">
+        <!-- Formulario nueva categoría -->
+        <div class="col-md-4">
+          <div class="card shadow-sm">
+            <div class="card-header fw-semibold bg-primary text-white">
+              <i class="bi bi-plus-circle"></i> Nueva Categoría
+            </div>
+            <div class="card-body">
+              <form th:action="@{/admin/categories/save}" method="post" th:object="${category}">
+                <input type="hidden" th:field="*{id}"/>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Nombre *</label>
+                  <input type="text" th:field="*{name}" class="form-control" required
+                         placeholder="Ej: Electrónica"/>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Descripción</label>
+                  <textarea th:field="*{description}" class="form-control" rows="2"
+                            placeholder="Descripción opcional"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="bi bi-floppy-fill"></i> Guardar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de categorías -->
+        <div class="col-md-8">
+          <div class="card shadow-sm">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Productos</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="cat : ${categories}">
+                    <td th:text="${cat.id}"></td>
+                    <td class="fw-semibold" th:text="${cat.name}"></td>
+                    <td class="text-muted small" th:text="${cat.description}"></td>
+                    <td class="text-center">
+                      <span class="badge bg-primary" th:text="${cat.productCount}"></span>
+                    </td>
+                    <td class="text-center">
+                      <form th:action="@{/admin/categories/{id}/delete(id=${cat.id})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('¿Eliminar esta categoría?')">
+                          <i class="bi bi-trash3"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

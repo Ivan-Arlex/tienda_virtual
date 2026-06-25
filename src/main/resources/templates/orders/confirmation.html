@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Confirmación de Orden - TiendaVirtual</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <div th:if="${success}" class="alert alert-success text-center">
+        <i class="bi bi-check-circle-fill fs-3"></i>
+        <p class="mb-0 fw-semibold mt-1" th:text="${success}"></p>
+      </div>
+      <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-receipt-cutoff"></i>
+            Orden #<span th:text="${order.id}"></span>
+          </h5>
+          <span class="badge fs-6"
+                th:classappend="${order.status.name() == 'PAGADO' ? 'bg-success' :
+                                  order.status.name() == 'PENDIENTE' ? 'bg-warning text-dark' :
+                                  order.status.name() == 'CANCELADO' ? 'bg-danger' : 'bg-info'}"
+                th:text="${order.status}"></span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">
+            Fecha: <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+          </p>
+
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end">Precio unit.</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="item : ${order.items}">
+                <td th:text="${item.productName}"></td>
+                <td class="text-center" th:text="${item.quantity}"></td>
+                <td class="text-end"
+                    th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
+                <td class="text-end"
+                    th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="text-end fw-bold">Total:</td>
+                <td class="text-end fw-bold text-primary fs-5"
+                    th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <!-- Pago ya realizado -->
+          <div th:if="${order.payment != null}" class="alert alert-success mt-3">
+            <i class="bi bi-shield-check-fill"></i>
+            Pago procesado con <strong th:text="${order.payment.method}"></strong> —
+            Estado: <span th:text="${order.payment.status}"></span>
+          </div>
+
+          <!-- Formulario de pago simulado -->
+          <div th:if="${order.payment == null and order.status.name() == 'PENDIENTE'}" class="mt-3">
+            <h6 class="fw-semibold">Simular pago</h6>
+            <form th:action="@{/orders/{id}/pay(id=${order.id})}" method="post"
+                  class="d-flex gap-3 align-items-end">
+              <div class="flex-grow-1">
+                <label class="form-label small">Método de pago</label>
+                <select name="method" class="form-select">
+                  <option value="TARJETA_CREDITO">Tarjeta de Crédito</option>
+                  <option value="TARJETA_DEBITO">Tarjeta de Débito</option>
+                  <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                  <option value="EFECTIVO">Pago en Efectivo</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-credit-card-fill"></i> Pagar ahora
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+          <a th:href="@{/orders/history}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-list-ul"></i> Mis pedidos
+          </a>
+          <a th:href="@{/catalog}" class="btn btn-primary btn-sm">
+            <i class="bi bi-bag-fill"></i> Seguir comprando
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-4">
+  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

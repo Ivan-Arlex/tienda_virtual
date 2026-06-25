@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>TiendaVirtual - Inicio</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<!-- Hero -->
+<div class="hero-section text-white text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Bienvenido a TiendaVirtual</h1>
+    <p class="lead">Encuentra los mejores productos al mejor precio</p>
+    <a th:href="@{/catalog}" class="btn btn-light btn-lg mt-3">
+      <i class="bi bi-grid-3x3-gap-fill"></i> Ver Catálogo
+    </a>
+  </div>
+</div>
+
+<!-- Categorías -->
+<div class="container py-5">
+  <h2 class="mb-4 fw-semibold">Categorías</h2>
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-md-3" th:each="cat : ${categories}">
+      <a th:href="@{/catalog(categoryId=${cat.id})}" class="text-decoration-none">
+        <div class="card h-100 text-center border-0 shadow-sm category-card">
+          <div class="card-body py-4">
+            <i class="bi bi-tag-fill fs-1 text-primary mb-2"></i>
+            <h6 class="card-title fw-semibold mb-0" th:text="${cat.name}"></h6>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Productos destacados -->
+  <h2 class="mb-4 fw-semibold">Productos Destacados</h2>
+  <div class="row g-4">
+    <div class="col-md-3" th:each="product : ${featuredProducts}">
+      <div class="card h-100 shadow-sm product-card">
+        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px">
+          <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+               th:src="${product.imageUrl}" class="img-fluid" style="max-height:160px; object-fit:contain" alt=""/>
+          <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+             class="bi bi-box-seam fs-1 text-secondary"></i>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <span class="badge bg-secondary mb-2 w-fit"
+                th:text="${product.categoryName}"></span>
+          <h6 class="card-title fw-semibold" th:text="${product.name}"></h6>
+          <p class="card-text text-muted small flex-grow-1"
+             th:text="${#strings.abbreviate(product.description, 80)}"></p>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span class="fs-5 fw-bold text-primary"
+                  th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></span>
+            <span class="badge" th:classappend="${product.stock > 0 ? 'bg-success' : 'bg-danger'}"
+                  th:text="${product.stock > 0 ? 'En stock' : 'Agotado'}"></span>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0 d-flex gap-2">
+          <a th:href="@{/products/{id}(id=${product.id})}"
+             class="btn btn-outline-primary btn-sm flex-grow-1">Ver detalle</a>
+          <sec:authorize access="isAuthenticated()">
+            <form th:action="@{/cart/add}" method="post" class="flex-grow-1">
+              <input type="hidden" name="productId" th:value="${product.id}"/>
+              <input type="hidden" name="quantity" value="1"/>
+              <button type="submit" class="btn btn-primary btn-sm w-100"
+                      th:disabled="${product.stock == 0}">
+                <i class="bi bi-cart-plus"></i>
+              </button>
+            </form>
+          </sec:authorize>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${#lists.isEmpty(featuredProducts)}" class="text-center py-5 text-muted">
+    <i class="bi bi-inbox fs-1"></i>
+    <p class="mt-2">No hay productos disponibles aún.</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0 small">© 2026 TiendaVirtual · Universidad del Pacífico</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

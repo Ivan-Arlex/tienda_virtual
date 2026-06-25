@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Dashboard Admin - TiendaVirtual</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-2">
+      <div class="list-group list-group-flush shadow-sm">
+        <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action active">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/admin/products}" class="list-group-item list-group-item-action">
+          <i class="bi bi-box-seam"></i> Productos
+        </a>
+        <a th:href="@{/admin/categories}" class="list-group-item list-group-item-action">
+          <i class="bi bi-tags"></i> Categorías
+        </a>
+        <a th:href="@{/admin/orders}" class="list-group-item list-group-item-action">
+          <i class="bi bi-bag-check"></i> Pedidos
+        </a>
+        <a th:href="@{/home}" class="list-group-item list-group-item-action text-secondary">
+          <i class="bi bi-arrow-left"></i> Tienda
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <h3 class="fw-semibold mb-4">Panel de Administración</h3>
+
+      <!-- Estadísticas -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+              <i class="bi bi-bag-fill fs-2 text-primary"></i>
+              <h2 class="mt-2 mb-0" th:text="${report.totalOrders}">0</h2>
+              <small class="text-muted">Total Pedidos</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+              <i class="bi bi-currency-dollar fs-2 text-success"></i>
+              <h2 class="mt-2 mb-0"
+                  th:text="${'$' + #numbers.formatDecimal(report.totalRevenue, 1, 2)}">$0</h2>
+              <small class="text-muted">Ingresos Totales</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+              <i class="bi bi-box-seam fs-2 text-warning"></i>
+              <h2 class="mt-2 mb-0" th:text="${report.totalProducts}">0</h2>
+              <small class="text-muted">Productos</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm text-center">
+            <div class="card-body">
+              <i class="bi bi-people-fill fs-2 text-info"></i>
+              <h2 class="mt-2 mb-0" th:text="${report.totalClients}">0</h2>
+              <small class="text-muted">Clientes</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado de pedidos -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Estado de Pedidos</div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col">
+              <span class="badge bg-warning text-dark fs-6" th:text="${report.pendingOrders}"></span>
+              <div class="small mt-1">Pendientes</div>
+            </div>
+            <div class="col">
+              <span class="badge bg-success fs-6" th:text="${report.paidOrders}"></span>
+              <div class="small mt-1">Pagados</div>
+            </div>
+            <div class="col">
+              <span class="badge bg-info fs-6" th:text="${report.shippedOrders}"></span>
+              <div class="small mt-1">Enviados</div>
+            </div>
+            <div class="col">
+              <span class="badge bg-primary fs-6" th:text="${report.deliveredOrders}"></span>
+              <div class="small mt-1">Entregados</div>
+            </div>
+            <div class="col">
+              <span class="badge bg-danger fs-6" th:text="${report.cancelledOrders}"></span>
+              <div class="small mt-1">Cancelados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos recientes -->
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold">Pedidos Recientes</span>
+          <a th:href="@{/admin/orders}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="order : ${recentOrders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.clientFullName}"></td>
+                <td th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}"></td>
+                <td>
+                  <span class="badge"
+                        th:classappend="${order.status.name() == 'PAGADO' ? 'bg-success' :
+                                          order.status.name() == 'PENDIENTE' ? 'bg-warning text-dark' :
+                                          order.status.name() == 'CANCELADO' ? 'bg-danger' : 'bg-info'}"
+                        th:text="${order.status}"></span>
+                </td>
+                <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>
