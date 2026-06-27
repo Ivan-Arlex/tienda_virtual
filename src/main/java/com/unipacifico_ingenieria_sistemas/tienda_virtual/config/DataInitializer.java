@@ -32,23 +32,23 @@ public class DataInitializer implements CommandLineRunner {
         Role clientRole = getOrCreateRole(RoleType.ROLE_CLIENTE);
         Role vendorRole = getOrCreateRole(RoleType.ROLE_VENDEDOR);
 
-        if (!userRepository.existsByUsername("admin")) {
+        if (!userRepository.existsByUsername("Luis_David")) {
             userRepository.save(Users.builder()
-                .username("admin")
-                .email("admin@tienda.com")
-                .password(passwordEncoder.encode("admin123"))
-                .fullName("Administrador")
+                .username("Luis_David")
+                .email("luis.david@tienda.com")
+                .password(passwordEncoder.encode("luis123"))
+                .fullName("Luis David")
                 .enabled(true)
                 .roles(Set.of(adminRole))
                 .build());
         }
 
-        if (!userRepository.existsByUsername("vendedor1")) {
+        if (!userRepository.existsByUsername("Viviana_Hurtado")) {
             userRepository.save(Users.builder()
-                .username("vendedor1")
-                .email("vendedor@tienda.com")
-                .password(passwordEncoder.encode("vendedor123"))
-                .fullName("Vendedor Principal")
+                .username("Viviana_Hurtado")
+                .email("viviana.hurtado@tienda.com")
+                .password(passwordEncoder.encode("viviana123"))
+                .fullName("Viviana Hurtado")
                 .enabled(true)
                 .roles(Set.of(vendorRole))
                 .build());
