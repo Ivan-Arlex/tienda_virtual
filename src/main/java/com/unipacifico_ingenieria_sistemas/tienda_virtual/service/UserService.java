@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,19 +32,21 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    public Optional<UserDto> getUsuarioAutenticado() {
+    public Optional<UserDto> getUsersAuthention() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        // Validamos si no hay sesión activa o si es el usuario anónimo por defecto de Spring
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return Optional.empty();
         }
 
         String username = auth.getName();
-        
-        // Buscamos en la BD y mapeamos los campos al DTO
-       // return userMapper.toDto(userRepository.findByUsername(username));
-        return userRepository.findByUsername(username).map(user->userMapper.toDto(Optional.of(user)));
+
+        return userRepository.findByUsername(username).map(userMapper::toDto)
+                .or(() -> {
+                    throw new UsernameNotFoundException(
+                            "Error crítico en el Login: El usuario autenticado '" + username + "' no existe en la base de datos."
+                    );
+                });
     }
     public UserDto register(RegisterDto dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
@@ -56,7 +59,7 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("Rol CLIENTE no encontrado"));
 
         Users users = userMapper.toEntity(dto, passwordEncoder.encode(dto.getPassword()), Set.of(clientRole));
-        return userMapper.toDto((Optional<Users>) Optional.ofNullable(userRepository.save(users)));
+        return userMapper.toDto((userRepository.save(users)));
     }
 
     public UserDto findByUsername(String username) {

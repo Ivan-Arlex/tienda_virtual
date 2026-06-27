@@ -2,44 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <th:block th:replace="~{fragments/nav :: head-includes}"/>
-  <title>3Market – Su tienda virtual</title>
+    <th:block th:replace="~{fragments/nav :: head-includes}"/>
+    <title>3Market – Su tienda virtual</title>
 </head>
 <body>
 
 <th:block th:replace="~{fragments/nav :: navbar}"/>
 
 <section class="hero-section">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0" style="position:relative;z-index:1">
-        <h1 class="hero-title">Descubre las<br>mejores ofertas</h1>
-        <p class="hero-subtitle">Tecnología, hogar, moda y más</p>
-        <span th:if="${usuarioLogueado != null}" class="badge bg-info text-dark mb-3">
-          Sesión iniciada como Cliente: <span th:text="${usuarioLogueado.username}"></span>
-        </span>
-        <br th:if="${usuarioLogueado != null}"/>
-        <a th:href="@{/catalog}" class="btn-hero d-inline-block mt-3">
-          Ver Ofertas
-        </a>
-      </div>
-      <div class="col-lg-6 d-none d-lg-flex justify-content-center" style="position:relative;z-index:1">
-        <div class="hero-icons-area">
-          <span style="font-size:5.5rem;filter:drop-shadow(0 8px 20px rgba(0,194,203,.4))">🛍️</span>
-          <span style="font-size:7rem;filter:drop-shadow(0 8px 24px rgba(0,150,180,.5))">🛒</span>
-          <span style="font-size:4.5rem;filter:drop-shadow(0 6px 16px rgba(124,58,237,.4))">📦</span>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" style="position:relative;z-index:1">
+                <h1 class="hero-title">Descubre las<br>mejores ofertas</h1>
+                <p class="hero-subtitle">Tecnología, hogar, moda y más</p>
+                <span th:if="${usuarioLogueado != null}" class="badge bg-info text-dark mb-3">
+     User: <span th:text="${usuarioLogueado.username}"></span>
+  (<span th:text="${#strings.replace(usuarioLogueado.roles, 'ROLE_', '')}"></span>)</span>
+                <br th:if="${usuarioLogueado != null}"/>
+                <a th:href="@{/catalog}" class="btn-hero d-inline-block mt-3">
+                    Ver Ofertas
+                </a>
+            </div>
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center" style="position:relative;z-index:1">
+                <div class="hero-icons-area">
+                    <span style="font-size:5.5rem;filter:drop-shadow(0 8px 20px rgba(0,194,203,.4))">🛍️</span>
+                    <span style="font-size:7rem;filter:drop-shadow(0 8px 24px rgba(0,150,180,.5))">🛒</span>
+                    <span style="font-size:4.5rem;filter:drop-shadow(0 6px 16px rgba(124,58,237,.4))">📦</span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <section class="container py-5">
-  <h2 class="section-title">Categorías</h2>
-  <div class="row g-3 mb-2">
-    <div class="col-4 col-md-2" th:each="cat : ${categories}">
-      <a th:href="@{/catalog(categoryId=${cat.id})}" class="category-item d-block">
-        <div class="category-circle">
+    <h2 class="section-title">Categorías</h2>
+    <div class="row g-3 mb-2">
+        <div class="col-4 col-md-2" th:each="cat : ${categories}">
+            <a th:href="@{/catalog(categoryId=${cat.id})}" class="category-item d-block">
+                <div class="category-circle">
           <span th:switch="${#strings.toLowerCase(cat.name)}">
             <span th:case="'tecnología'">📱</span>
             <span th:case="'tecnologia'">📱</span>
@@ -53,70 +53,76 @@
             <span th:case="'ofertas'">🌸</span>
             <span th:case="*"><i class="bi bi-tag-fill text-primary"></i></span>
           </span>
+                </div>
+                <p class="cat-name" th:text="${cat.name}"></p>
+            </a>
         </div>
-        <p class="cat-name" th:text="${cat.name}"></p>
-      </a>
     </div>
-  </div>
 </section>
 
 <section class="container pb-5">
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="section-title mb-0">Productos Destacados</h2>
-    <a th:href="@{/catalog}" class="btn-outline-3m btn">Ver todos</a>
-  </div>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="section-title mb-0">Productos Destacados</h2>
+        <a th:href="@{/catalog}" class="btn-outline-3m btn">Ver todos</a>
+    </div>
 
-  <div class="row g-4">
-    <div class="col-6 col-md-3" th:each="product : ${featuredProducts}">
-      <div class="card product-card h-100 border-0 shadow-sm">
-        <div class="product-img-wrap">
-          <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
-               th:src="${product.imageUrl}" alt=""/>
-          <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
-             class="bi bi-box-seam" style="font-size:3.5rem;color:#cbd5e1"></i>
-        </div>
-        <div class="card-body d-flex flex-column p-3">
+    <div class="row g-4">
+        <div class="col-6 col-md-3" th:each="product : ${featuredProducts}">
+            <div class="card product-card h-100 border-0 shadow-sm">
+                <div class="product-img-wrap">
+                    <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                         th:src="${product.imageUrl}" alt=""/>
+                    <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                       class="bi bi-box-seam" style="font-size:3.5rem;color:#cbd5e1"></i>
+                </div>
+                <div class="card-body d-flex flex-column p-3">
           <span class="badge bg-secondary mb-1 w-fit" style="font-size:.72rem"
                 th:text="${product.categoryName}"></span>
-          <h6 class="fw-bold mb-1" style="font-size:.9rem" th:text="${product.name}"></h6>
-          <p class="text-muted mb-2 flex-grow-1" style="font-size:.78rem"
-             th:text="${#strings.abbreviate(product.description, 70)}"></p>
-          <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <h6 class="fw-bold mb-1" style="font-size:.9rem" th:text="${product.name}"></h6>
+                    <p class="text-muted mb-2 flex-grow-1" style="font-size:.78rem"
+                       th:text="${#strings.abbreviate(product.description, 70)}"></p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
             <span class="price-tag"
                   th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></span>
-            <span class="badge" style="font-size:.7rem"
-                  th:classappend="${product.stock > 0 ? 'bg-success' : 'bg-danger'}"
-                  th:text="${product.stock > 0 ? 'Stock' : 'Agotado'}"></span>
-          </div>
+                        <span class="badge" style="font-size:.7rem"
+                              th:classappend="${product.stock > 0 ? 'bg-success' : 'bg-danger'}"
+                              th:text="${product.stock > 0 ? 'Stock' : 'Agotado'}"></span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 d-flex gap-2 p-3 pt-0">
+                    <a th:href="@{/products/{id}(id=${product.id})}"
+                       class="btn btn-outline-3m btn-sm flex-grow-1">Ver más</a>
+
+                    <div th:if="${usuarioLogueado != null and usuarioLogueado.roles == 'ROLE_CLIENTE'}" class="flex-grow-1">
+                        <form th:action="@{/cart/add}" method="post" class="w-100">
+                            <input type="hidden" name="productId" th:value="${product.id}"/>
+                            <input type="hidden" name="quantity" value="1"/>
+                            <button type="submit" class="btn btn-primary-3m btn-sm w-100"
+                                    th:disabled="${product.stock == 0}">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${usuarioLogueado != null and usuarioLogueado.roles != 'ROLE_CLIENTE'}" class="flex-grow-1">
+                        <button class="btn btn-secondary btn-sm w-100" disabled>
+                            <i class="bi bi-cart-x"></i> Solo clientes
+                        </button>
+                    </div>
+
+                    <div th:if="${usuarioLogueado == null}" class="flex-grow-1">
+                        <a th:href="@{/auth/login}" class="btn btn-primary-3m btn-sm w-100">
+                            <i class="bi bi-cart-plus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-footer bg-transparent border-0 d-flex gap-2 p-3 pt-0">
-          <a th:href="@{/products/{id}(id=${product.id})}"
-             class="btn btn-outline-3m btn-sm flex-grow-1">Ver más</a>
-          
-          <div th:if="${usuarioLogueado != null}" class="flex-grow-1">
-            <form th:action="@{/cart/add}" method="post" class="w-100">
-              <input type="hidden" name="productId" th:value="${product.id}"/>
-              <input type="hidden" name="quantity" value="1"/>
-              <button type="submit" class="btn btn-primary-3m btn-sm w-100"
-                      th:disabled="${product.stock == 0}">
-                <i class="bi bi-cart-plus"></i>
-              </button>
-            </form>
-          </div>
-          
-          <div th:if="${usuarioLogueado == null}" class="flex-grow-1">
-            <a th:href="@{/auth/login}" class="btn btn-primary-3m btn-sm w-100">
-              <i class="bi bi-cart-plus"></i>
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <footer class="footer-3m">
-  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
+    <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
 </footer>
 
 <th:block th:replace="~{fragments/nav :: scripts}"/>

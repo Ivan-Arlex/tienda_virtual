@@ -66,8 +66,8 @@
                 <td th:text="${product.id}"></td>
                 <td class="fw-semibold" th:text="${product.name}"></td>
                 <td>
-                  <span class="badge bg-secondary"
-                        th:text="${product.category != null ? product.category.name : '-'}"></span>
+  <span class="badge bg-secondary"
+        th:text="${product.categoryName != null and !product.categoryName.isEmpty() ? product.categoryName : '-'}"></span>
                 </td>
                 <td class="text-end"
                     th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></td>

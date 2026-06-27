@@ -13,19 +13,18 @@ import java.util.stream.Collectors;
 @Component
 public class UserMapper {
 
-    public UserDto toDto(Optional<Users> users) {
-        if (users == null) return null;
-        Set<String> roles = optional.getRoles().stream()
-            .map(role -> role.getName().name())
-            .collect(Collectors.toSet());
-        return UserDto.builder()
-            .id(optional.getId())
-            .username(optional.getUsername())
-            .email(users.getEmail())
-            .fullName(optional.getFullName())
-            .enabled(optional.isEnabled())
-            .roles(roles)
-            .build();
+    public UserDto toDto(Users users) {
+
+            return UserDto.builder()
+                    .id(users.getId())
+                    .username(users.getUsername())
+                    .email(users.getEmail())
+                    .fullName(users.getFullName())
+                    .enabled(users.isEnabled())
+                    .roles( users.getRoles().stream()
+                            .map(role -> role.getName().name())
+                    .collect(Collectors.toSet()))
+                    .build();
     }
 
     public Users toEntity(RegisterDto dto, String encodedPassword, Set<Role> roles) {

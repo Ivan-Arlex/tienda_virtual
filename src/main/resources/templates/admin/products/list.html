@@ -81,10 +81,9 @@
                 </td>
                 <td class="fw-semibold" th:text="${product.name}"></td>
                 <td>
-                  <span class="badge bg-secondary"
-                        th:text="${product.category != null ? product.category.name : '-'}"></span>
-                </td>
-                <td class="text-end price-tag"
+  <span class="badge bg-secondary"
+        th:text="${product.categoryName != null and !product.categoryName.isEmpty() ? product.categoryName : '-'}"></span>
+                </td>                <td class="text-end price-tag"
                     th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
                 <td class="text-center">
                   <span class="badge badge-status"

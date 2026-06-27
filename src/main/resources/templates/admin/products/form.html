@@ -27,14 +27,14 @@
         <div class="panel-header">
           <span>
             <i class="bi bi-box-seam me-2" style="color:var(--blue)"></i>
-            <span th:text="${productDto.id != null ? 'Editar Producto' : 'Registrar Nuevo Producto'}"></span>
+            <span th:text="@{productDto.id != null ? 'Editar Producto' : 'Registrar Nuevo Producto'}"></span>
           </span>
         </div>
 
         <div class="p-4">
           <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
 
-          <form th:action="${formAction}" method="post" th:object="${productDto}"
+          <form th:action="${/admin/products/save}" method="post" th:object="${productDto}"
                 enctype="multipart/form-data">
             <input type="hidden" th:field="*{id}"/>
 

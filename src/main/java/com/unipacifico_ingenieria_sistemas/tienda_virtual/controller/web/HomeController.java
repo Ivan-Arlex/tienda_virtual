@@ -27,11 +27,11 @@ public class HomeController {
         model.addAttribute("featuredProducts", productService.findAvailable().stream().limit(8).toList());
         model.addAttribute("categories", categoryService.findAll());
         // 1. Llamamos al método que creamos con el SecurityContextHolder
-        Optional<UserDto> usuarioOpt = userService.getUsuarioAutenticado();
+        Optional<UserDto> usuriousOpt = userService.getUsersAuthention();
 
   
-        if (usuarioOpt.isPresent()) {
-            UserDto userDto = usuarioOpt.get();
+        if (usuriousOpt.isPresent()) {
+            UserDto userDto = usuriousOpt.get();
             model.addAttribute("usuarioLogueado", userDto);
             
             if ("ROLE_ADMIN".equals(userDto.getRoles())) {
@@ -42,8 +42,10 @@ public class HomeController {
             }
         
 
-        return "home"; 
+        return "home/index";
     }
+
+        return "redirect:/login";
     }
 
     @GetMapping("/catalog")

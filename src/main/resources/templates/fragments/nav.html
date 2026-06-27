@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <nav th:fragment="navbar" class="navbar-3market">
   <div class="container d-flex align-items-center gap-3">
 
-    <!-- Logo -->
     <a th:href="@{/home}" class="navbar-brand-3market me-2">
       <span class="brand-name">3MARKET</span>
       <span class="brand-tagline">Su tienda virtual, siempre contigo</span>
     </a>
 
-    <!-- Buscador -->
     <form th:action="@{/catalog}" method="get"
           class="search-wrapper d-none d-md-flex align-items-center flex-grow-1">
       <input type="text" name="search" class="form-control search-input"
@@ -22,88 +19,85 @@
       </button>
     </form>
 
-    <!-- Links de navegación -->
     <div class="d-flex align-items-center gap-2 ms-auto">
 
-      <!-- Enlace Catálogo (todos) -->
       <a th:href="@{/catalog}" class="nav-link-3m d-none d-lg-block">Catálogo</a>
 
-      <!-- Botón Registrar Producto (Admin y Vendedor) -->
-      <sec:authorize access="hasAnyRole('ADMIN','VENDEDOR')">
+      <div th:if="${usuarioLogueado != null and ( #strings.contains(usuarioLogueado.roles, 'ADMIN') or #strings.contains(usuarioLogueado.roles, 'VENDEDOR') )}">
         <a th:href="@{/vendedor/products/new}" class="btn-register-product d-none d-md-flex align-items-center gap-1">
           <i class="bi bi-plus-circle-fill"></i> Registrar producto
         </a>
-      </sec:authorize>
+      </div>
 
-      <!-- Informes (Admin y Vendedor) -->
-      <sec:authorize access="hasRole('ADMIN')">
+
+      <div th:if="${usuarioLogueado != null and usuarioLogueado.roles == 'ROLE_ADMIN'}">
         <a th:href="@{/admin/dashboard}" class="btn-admin-link d-none d-md-flex align-items-center gap-1">
           <i class="bi bi-bar-chart-fill"></i> Informes
         </a>
-      </sec:authorize>
-      <sec:authorize access="hasRole('VENDEDOR')">
+      </div>
+
+      <div th:if="${usuarioLogueado != null and usuarioLogueado.roles == 'ROLE_VENDEDOR'}">
         <a th:href="@{/vendedor/dashboard}" class="btn-admin-link d-none d-md-flex align-items-center gap-1">
           <i class="bi bi-bar-chart-fill"></i> Informes
         </a>
-      </sec:authorize>
+      </div>
 
-      <!-- Carrito (solo Cliente) -->
-      <sec:authorize access="hasRole('CLIENTE')">
+      <div th:if="${usuarioLogueado != null and usuarioLogueado.roles == 'ROLE_CLIENTE'}" class="d-inline">
         <a th:href="@{/cart}" class="nav-icon-btn" title="Mi carrito">
           <i class="bi bi-cart3"></i>
         </a>
-      </sec:authorize>
+      </div>
 
-      <!-- Mis Pedidos en barra (solo Cliente) -->
-      <sec:authorize access="hasRole('CLIENTE')">
+      <div th:if="${usuarioLogueado != null and usuarioLogueado.roles == 'ROLE_CLIENTE'}" class="d-inline">
         <a th:href="@{/orders/history}" class="nav-link-3m d-none d-lg-block">Mis pedidos</a>
-      </sec:authorize>
+      </div>
 
-      <!-- Menú usuario autenticado -->
-      <sec:authorize access="isAuthenticated()">
-        <div class="dropdown">
-          <button class="d-flex align-items-center gap-2 bg-transparent border-0 text-white"
-                  type="button" data-bs-toggle="dropdown" style="cursor:pointer">
-            <div class="nav-avatar"><i class="bi bi-person-fill"></i></div>
-            <span class="d-none d-md-inline" style="font-size:.85rem;color:#cdd5e0"
-                  sec:authentication="name"></span>
-            <i class="bi bi-chevron-down" style="font-size:.75rem;color:#8899aa"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:180px">
-            <li><h6 class="dropdown-header" sec:authentication="name"></h6></li>
-            <!-- Mis pedidos: solo Cliente -->
-            <sec:authorize access="hasRole('CLIENTE')">
-              <li><a class="dropdown-item" th:href="@{/orders/history}">
-                <i class="bi bi-bag-heart me-2 text-primary"></i>Mis pedidos</a></li>
-            </sec:authorize>
-            <!-- Productos: Admin y Vendedor -->
-            <sec:authorize access="hasAnyRole('ADMIN','VENDEDOR')">
-              <li><a class="dropdown-item" th:href="@{/vendedor/products}">
-                <i class="bi bi-box-seam me-2 text-success"></i>Mis productos</a></li>
-            </sec:authorize>
-            <!-- Panel e Informes: Admin y Vendedor -->
-            <sec:authorize access="hasRole('ADMIN')">
-              <li><a class="dropdown-item" th:href="@{/admin/dashboard}">
-                <i class="bi bi-speedometer2 me-2 text-warning"></i>Panel Admin</a></li>
-            </sec:authorize>
-            <sec:authorize access="hasRole('VENDEDOR')">
-              <li><a class="dropdown-item" th:href="@{/vendedor/dashboard}">
-                <i class="bi bi-bar-chart-fill me-2 text-info"></i>Informes</a></li>
-            </sec:authorize>
-            <li><hr class="dropdown-divider"/></li>
-            <li>
-              <form th:action="@{/auth/logout}" method="post">
-                <button class="dropdown-item text-danger" type="submit">
-                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
-                </button>
-              </form>
-            </li>
-          </ul>
-        </div>
-      </sec:authorize>
+      <div th:if="${usuarioLogueado != null}" class="dropdown">
+        <button class="d-flex align-items-center gap-2 bg-transparent border-0 text-white"
+                type="button" data-bs-toggle="dropdown" style="cursor:pointer">
+          <div class="nav-avatar"><i class="bi bi-person-fill"></i></div>
+          <span class="d-none d-md-inline" style="font-size:.85rem;color:#cdd5e0"
+                th:text="${usuarioLogueado.username}"></span>
+          <i class="bi bi-chevron-down" style="font-size:.75rem;color:#8899aa"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:180px">
+          <li><h6 class="dropdown-header" th:text="${usuarioLogueado.username}"></h6></li>
 
-      <!-- Botones para no autenticados -->
-      <sec:authorize access="isAnonymous()">
+          <li th:if="${usuarioLogueado != null and #strings.contains(usuarioLogueado.roles, 'CLIENTE')}">
+            <a class="dropdown-item" th:href="@{/orders/history}">
+              <i class="bi bi-bag-heart me-2 text-primary"></i>Mis pedidos
+            </a>
+          </li>
+
+          <li th:if="${usuarioLogueado != null and ( #strings.contains(usuarioLogueado.roles, 'ADMIN') or #strings.contains(usuarioLogueado.roles, 'VENDEDOR') )}">
+            <a class="dropdown-item" th:href="@{/vendedor/products}">
+              <i class="bi bi-box-seam me-2 text-success"></i>Mis productos
+            </a>
+          </li>
+
+          <li th:if="${usuarioLogueado != null and #strings.contains(usuarioLogueado.roles, 'ADMIN')}">
+            <a class="dropdown-item" th:href="@{/admin/dashboard}">
+              <i class="bi bi-speedometer2 me-2 text-warning"></i>Panel Admin
+            </a>
+          </li>
+
+          <li th:if="${usuarioLogueado != null and #strings.contains(usuarioLogueado.roles, 'VENDEDOR')}">
+            <a class="dropdown-item" th:href="@{/vendedor/dashboard}">
+              <i class="bi bi-bar-chart-fill me-2 text-info"></i>Informes
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"/></li>
+          <li>
+            <form th:action="@{/auth/logout}" method="post">
+              <button class="dropdown-item text-danger" type="submit">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+
+      <div th:if="${usuarioLogueado == null}">
         <a th:href="@{/auth/login}"
            class="btn btn-sm btn-outline-light rounded-pill px-3" style="font-size:.85rem">
           Iniciar sesión
@@ -113,7 +107,8 @@
            style="background:var(--purple);font-size:.85rem">
           Registrarse
         </a>
-      </sec:authorize>
+      </div>
+
     </div>
   </div>
 </nav>
