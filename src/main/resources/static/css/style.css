@@ -193,10 +193,26 @@ body {
 
 /* ── Hero Section ── */
 .hero-section {
-  background: linear-gradient(135deg, var(--navy) 0%, #1a3a5c 60%, #0d4a4a 100%);
-  padding: 70px 0;
-  position: relative;
-  overflow: hidden;
+    /* El truco principal: bordes redondeados y un fondo degradado */
+    background: linear-gradient(135deg, #072236 0%, #0d3b5c 100%);
+    border-radius: 24px; /* Controla qué tan redondeadas quieres las esquinas */
+    padding: 40px 60px;  /* Espaciado interno para que el texto no toque los bordes */
+    margin: 20px auto;   /* Separa el recuadro de los elementos de arriba/abajo y lo centra */
+    max-width: 1200px;   /* Evita que se estire infinitamente en pantallas gigantes */
+    width: 100%;
+    
+    /* Opcional: Una leve sombra para darle profundidad como en la foto */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    
+    /* Asegura que las imágenes de fondo o elementos internos respeten las esquinas redondeadas */
+    overflow: hidden; 
+}
+
+/* Ajuste para que la imagen no se desborde ni se deforme */
+.hero-icons-area img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .hero-section::before {
@@ -390,7 +406,7 @@ body {
 }
 
 .auth-left {
-  background: linear-gradient(145deg, #170741 0%, #0026ff 50%, #09083e 100%);
+  background: linear-gradient(145deg, #0e012d 0%, #0a1034 50%, #090928 100%);
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;

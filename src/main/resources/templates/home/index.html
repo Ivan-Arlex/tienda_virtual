@@ -9,30 +9,27 @@
 
 <th:block th:replace="~{fragments/nav :: navbar}"/>
 
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0" style="position:relative;z-index:1">
-                <h1 class="hero-title">Descubre las<br>mejores ofertas</h1>
-                <p class="hero-subtitle">Tecnología, hogar, moda y más</p>
-                <span th:if="${usuarioLogueado != null}" class="badge bg-info text-dark mb-3">
-     User: <span th:text="${usuarioLogueado.username}"></span>
-  (<span th:text="${#strings.replace(usuarioLogueado.roles, 'ROLE_', '')}"></span>)</span>
-                <br th:if="${usuarioLogueado != null}"/>
-                <a th:href="@{/catalog}" class="btn-hero d-inline-block mt-3">
-                    Ver Ofertas
-                </a>
-            </div>
-            <div class="col-lg-6 d-none d-lg-flex justify-content-center" style="position:relative;z-index:1">
-                <div class="hero-icons-area">
-                    <span style="font-size:5.5rem;filter:drop-shadow(0 8px 20px rgba(0,194,203,.4))">🛍️</span>
-                    <span style="font-size:7rem;filter:drop-shadow(0 8px 24px rgba(0,150,180,.5))">🛒</span>
-                    <span style="font-size:4.5rem;filter:drop-shadow(0 6px 16px rgba(124,58,237,.4))">📦</span>
+<div class="container my-4"> 
+
+    <section class="hero-section">
+        <div class="container-fluid"> <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0" style="position:relative;z-index:1">
+                    <h1 class="hero-title text-white">Descubre las<br>mejores ofertas</h1>
+                    <p class="hero-subtitle text-white-50">Tecnología, hogar, moda y más</p>
+                    <a th:href="@{/catalog}" class="btn-hero d-inline-block mt-3">
+                        Ver Ofertas
+                    </a>
+                </div>
+                <div class="col-lg-6 d-none d-lg-flex justify-content-center" style="position:relative;z-index:1">
+                    <div class="hero-icons-area">
+                        <img th:src="@{/images/compras.png}" alt="compras" class="img-fluid"/>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+</div>
 
 <section class="container py-5">
     <h2 class="section-title">Categorías</h2>
