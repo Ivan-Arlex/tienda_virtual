@@ -2,36 +2,36 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <th:block th:replace="~{fragments/nav :: head-includes}"/>
-  <title>Carrito - TiendaVirtual</title>
+  <title>Mi Carrito – 3Market</title>
 </head>
 <body>
 
 <th:block th:replace="~{fragments/nav :: navbar}"/>
 
 <div class="container py-4">
-  <h3 class="fw-semibold mb-4"><i class="bi bi-cart3"></i> Mi Carrito</h3>
+  <h3 class="section-title"><i class="bi bi-cart3 me-2"></i>Mi Carrito</h3>
 
-  <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2">
     <span th:text="${success}"></span>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
   </div>
-  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2">
     <span th:text="${error}"></span>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
   </div>
 
   <div th:if="${cart.items.isEmpty()}" class="text-center py-5">
-    <i class="bi bi-cart-x fs-1 text-muted"></i>
-    <p class="text-muted mt-2">Tu carrito está vacío.</p>
-    <a th:href="@{/catalog}" class="btn btn-primary">Ir al catálogo</a>
+    <i class="bi bi-cart-x" style="font-size:4rem;color:#cbd5e1"></i>
+    <p class="text-muted mt-3">Tu carrito está vacío.</p>
+    <a th:href="@{/catalog}" class="btn btn-primary-3m px-4">Ir al catálogo</a>
   </div>
 
   <div th:unless="${cart.items.isEmpty()}" class="row g-4">
     <div class="col-md-8">
-      <div class="card shadow-sm">
+      <div class="panel-card">
         <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+          <table class="table align-middle mb-0">
+            <thead>
               <tr>
                 <th>Producto</th>
                 <th class="text-center">Precio</th>
@@ -44,33 +44,31 @@
               <tr th:each="item : ${cart.items}">
                 <td>
                   <div class="d-flex align-items-center gap-3">
-                    <div class="bg-light rounded d-flex align-items-center justify-content-center"
-                         style="width:56px;height:56px;min-width:56px">
+                    <div class="product-img-wrap rounded" style="width:56px;height:56px">
                       <img th:if="${item.productImageUrl != null and !item.productImageUrl.isEmpty()}"
-                           th:src="${item.productImageUrl}" class="img-fluid rounded"
-                           style="max-height:50px; object-fit:contain" alt=""/>
+                           th:src="${item.productImageUrl}" alt=""
+                           style="max-height:50px;object-fit:contain"/>
                       <i th:unless="${item.productImageUrl != null and !item.productImageUrl.isEmpty()}"
-                         class="bi bi-box-seam text-secondary fs-4"></i>
+                         class="bi bi-box-seam" style="font-size:1.5rem;color:#cbd5e1"></i>
                     </div>
                     <div>
                       <a th:href="@{/products/{id}(id=${item.productId})}"
-                         class="fw-semibold text-dark text-decoration-none"
+                         class="fw-bold text-dark text-decoration-none" style="font-size:.9rem"
                          th:text="${item.productName}"></a>
-                      <div class="small text-muted" th:text="${item.categoryName}"></div>
+                      <div class="text-muted" style="font-size:.78rem" th:text="${item.categoryName}"></div>
                     </div>
                   </div>
                 </td>
                 <td class="text-center"
                     th:text="${'$' + #numbers.formatDecimal(item.productPrice, 1, 2)}"></td>
-                <td class="text-center" style="width:130px">
-                  <form th:action="@{/cart/update/{id}(id=${item.id})}" method="post"
-                        class="d-flex align-items-center gap-1">
+                <td class="text-center" style="width:120px">
+                  <form th:action="@{/cart/update/{id}(id=${item.id})}" method="post">
                     <input type="number" name="quantity" class="form-control form-control-sm text-center"
                            th:value="${item.quantity}" min="1" th:max="${item.availableStock}"
-                           onchange="this.form.submit()" style="width:65px"/>
+                           onchange="this.form.submit()" style="width:65px;border-radius:8px"/>
                   </form>
                 </td>
-                <td class="text-center fw-semibold text-primary"
+                <td class="text-center fw-bold price-tag"
                     th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></td>
                 <td>
                   <form th:action="@{/cart/remove/{id}(id=${item.id})}" method="post">
@@ -87,28 +85,27 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title fw-bold">Resumen</h5>
-          <hr/>
+      <div class="panel-card">
+        <div class="panel-header"><span class="fw-bold">Resumen del pedido</span></div>
+        <div class="p-4">
           <div class="d-flex justify-content-between mb-2">
-            <span>Subtotal</span>
+            <span class="text-muted">Subtotal</span>
             <span th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}"></span>
           </div>
           <div class="d-flex justify-content-between mb-3">
-            <span>Envío</span>
-            <span class="text-success">Gratis</span>
+            <span class="text-muted">Envío</span>
+            <span class="text-success fw-semibold">Gratis</span>
           </div>
           <hr/>
           <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
             <span>Total</span>
-            <span class="text-primary"
+            <span class="price-tag"
                   th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}"></span>
           </div>
-          <a th:href="@{/orders/checkout}" class="btn btn-success w-100 btn-lg">
-            <i class="bi bi-bag-check-fill"></i> Proceder al pago
+          <a th:href="@{/orders/checkout}" class="btn btn-auth-primary w-100 text-decoration-none d-block text-center">
+            <i class="bi bi-bag-check-fill me-1"></i>Proceder al pago
           </a>
-          <a th:href="@{/catalog}" class="btn btn-outline-secondary w-100 mt-2">
+          <a th:href="@{/catalog}" class="btn btn-outline-secondary w-100 mt-2 btn-sm">
             Seguir comprando
           </a>
         </div>
@@ -117,8 +114,8 @@
   </div>
 </div>
 
-<footer class="bg-dark text-white text-center py-3 mt-5">
-  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
 </footer>
 
 <th:block th:replace="~{fragments/nav :: scripts}"/>

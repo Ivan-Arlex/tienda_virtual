@@ -3,65 +3,117 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand fw-bold" th:href="@{/home}">
-      <i class="bi bi-shop"></i> TiendaVirtual
+<nav th:fragment="navbar" class="navbar-3market">
+  <div class="container d-flex align-items-center gap-3">
+
+    <!-- Logo -->
+    <a th:href="@{/home}" class="navbar-brand-3market me-2">
+      <span class="brand-name">3MARKET</span>
+      <span class="brand-tagline">Su tienda virtual, siempre contigo</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/home}">Inicio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/catalog}">Catálogo</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ms-auto align-items-center gap-2">
-        <sec:authorize access="isAuthenticated()">
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/cart}">
-              <i class="bi bi-cart3"></i> Carrito
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/orders/history}">Mis Pedidos</a>
-          </li>
-          <sec:authorize access="hasRole('ADMIN')">
-            <li class="nav-item">
-              <a class="nav-link text-warning" th:href="@{/admin/dashboard}">
-                <i class="bi bi-gear-fill"></i> Admin
-              </a>
+
+    <!-- Buscador -->
+    <form th:action="@{/catalog}" method="get"
+          class="search-wrapper d-none d-md-flex align-items-center flex-grow-1">
+      <input type="text" name="search" class="form-control search-input"
+             placeholder="Buscar productos..."/>
+      <button type="submit" class="btn-search">
+        <i class="bi bi-search" style="font-size:.9rem"></i>
+      </button>
+    </form>
+
+    <!-- Links de navegación -->
+    <div class="d-flex align-items-center gap-2 ms-auto">
+
+      <!-- Enlace Catálogo (todos) -->
+      <a th:href="@{/catalog}" class="nav-link-3m d-none d-lg-block">Catálogo</a>
+
+      <!-- Botón Registrar Producto (Admin y Vendedor) -->
+      <sec:authorize access="hasAnyRole('ADMIN','VENDEDOR')">
+        <a th:href="@{/vendedor/products/new}" class="btn-register-product d-none d-md-flex align-items-center gap-1">
+          <i class="bi bi-plus-circle-fill"></i> Registrar producto
+        </a>
+      </sec:authorize>
+
+      <!-- Informes (Admin y Vendedor) -->
+      <sec:authorize access="hasRole('ADMIN')">
+        <a th:href="@{/admin/dashboard}" class="btn-admin-link d-none d-md-flex align-items-center gap-1">
+          <i class="bi bi-bar-chart-fill"></i> Informes
+        </a>
+      </sec:authorize>
+      <sec:authorize access="hasRole('VENDEDOR')">
+        <a th:href="@{/vendedor/dashboard}" class="btn-admin-link d-none d-md-flex align-items-center gap-1">
+          <i class="bi bi-bar-chart-fill"></i> Informes
+        </a>
+      </sec:authorize>
+
+      <!-- Carrito (solo Cliente) -->
+      <sec:authorize access="hasRole('CLIENTE')">
+        <a th:href="@{/cart}" class="nav-icon-btn" title="Mi carrito">
+          <i class="bi bi-cart3"></i>
+        </a>
+      </sec:authorize>
+
+      <!-- Mis Pedidos en barra (solo Cliente) -->
+      <sec:authorize access="hasRole('CLIENTE')">
+        <a th:href="@{/orders/history}" class="nav-link-3m d-none d-lg-block">Mis pedidos</a>
+      </sec:authorize>
+
+      <!-- Menú usuario autenticado -->
+      <sec:authorize access="isAuthenticated()">
+        <div class="dropdown">
+          <button class="d-flex align-items-center gap-2 bg-transparent border-0 text-white"
+                  type="button" data-bs-toggle="dropdown" style="cursor:pointer">
+            <div class="nav-avatar"><i class="bi bi-person-fill"></i></div>
+            <span class="d-none d-md-inline" style="font-size:.85rem;color:#cdd5e0"
+                  sec:authentication="name"></span>
+            <i class="bi bi-chevron-down" style="font-size:.75rem;color:#8899aa"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;min-width:180px">
+            <li><h6 class="dropdown-header" sec:authentication="name"></h6></li>
+            <!-- Mis pedidos: solo Cliente -->
+            <sec:authorize access="hasRole('CLIENTE')">
+              <li><a class="dropdown-item" th:href="@{/orders/history}">
+                <i class="bi bi-bag-heart me-2 text-primary"></i>Mis pedidos</a></li>
+            </sec:authorize>
+            <!-- Productos: Admin y Vendedor -->
+            <sec:authorize access="hasAnyRole('ADMIN','VENDEDOR')">
+              <li><a class="dropdown-item" th:href="@{/vendedor/products}">
+                <i class="bi bi-box-seam me-2 text-success"></i>Mis productos</a></li>
+            </sec:authorize>
+            <!-- Panel e Informes: Admin y Vendedor -->
+            <sec:authorize access="hasRole('ADMIN')">
+              <li><a class="dropdown-item" th:href="@{/admin/dashboard}">
+                <i class="bi bi-speedometer2 me-2 text-warning"></i>Panel Admin</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasRole('VENDEDOR')">
+              <li><a class="dropdown-item" th:href="@{/vendedor/dashboard}">
+                <i class="bi bi-bar-chart-fill me-2 text-info"></i>Informes</a></li>
+            </sec:authorize>
+            <li><hr class="dropdown-divider"/></li>
+            <li>
+              <form th:action="@{/auth/logout}" method="post">
+                <button class="dropdown-item text-danger" type="submit">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </button>
+              </form>
             </li>
-          </sec:authorize>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle"></i>
-              <span sec:authentication="name"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <form th:action="@{/auth/logout}" method="post">
-                  <button class="dropdown-item text-danger" type="submit">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </li>
-        </sec:authorize>
-        <sec:authorize access="isAnonymous()">
-          <li class="nav-item">
-            <a class="btn btn-outline-light btn-sm" th:href="@{/auth/login}">Iniciar sesión</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-primary btn-sm" th:href="@{/auth/register}">Registrarse</a>
-          </li>
-        </sec:authorize>
-      </ul>
+          </ul>
+        </div>
+      </sec:authorize>
+
+      <!-- Botones para no autenticados -->
+      <sec:authorize access="isAnonymous()">
+        <a th:href="@{/auth/login}"
+           class="btn btn-sm btn-outline-light rounded-pill px-3" style="font-size:.85rem">
+          Iniciar sesión
+        </a>
+        <a th:href="@{/auth/register}"
+           class="btn btn-sm rounded-pill px-3 text-white"
+           style="background:var(--purple);font-size:.85rem">
+          Registrarse
+        </a>
+      </sec:authorize>
     </div>
   </div>
 </nav>

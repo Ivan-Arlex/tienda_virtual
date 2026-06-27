@@ -2,61 +2,97 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <th:block th:replace="~{fragments/nav :: head-includes}"/>
-  <title>Registro - TiendaVirtual</title>
+  <title>Crear Cuenta – 3Market</title>
 </head>
-<body class="bg-light">
+<body class="auth-page">
 
-<th:block th:replace="~{fragments/nav :: navbar}"/>
+<div class="auth-card">
+  <div class="row g-0 h-100">
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-body p-4">
-          <h4 class="card-title text-center mb-4">
-            <i class="bi bi-person-plus-fill text-primary"></i> Crear Cuenta
-          </h4>
+    <!-- Lado izquierdo: Logo -->
+    <div class="col-md-5 auth-left">
+      <div class="text-center" style="position:relative;z-index:1">
+        <img th:src="@{/images/logo_3market.png}" alt="3MARKET" width="400" height="400" class="auth-logo"/>
+      </div>
 
-          <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-          <form th:action="@{/auth/register}" method="post" th:object="${registerDto}">
-            <div class="mb-3">
-              <label class="form-label">Nombre completo</label>
-              <input type="text" th:field="*{fullName}" class="form-control"
-                     placeholder="Tu nombre completo" required/>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Usuario</label>
-              <input type="text" th:field="*{username}" class="form-control"
-                     placeholder="Elige un nombre de usuario" required/>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" th:field="*{email}" class="form-control"
-                     placeholder="tu@email.com" required/>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Contraseña</label>
-              <input type="password" th:field="*{password}" class="form-control"
-                     placeholder="Mínimo 6 caracteres" required minlength="6"/>
-            </div>
-            <div class="d-grid mt-4">
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-person-check"></i> Registrarse
-              </button>
-            </div>
-          </form>
-
-          <hr/>
-          <p class="text-center mb-0 text-muted small">
-            ¿Ya tienes cuenta? <a th:href="@{/auth/login}">Inicia sesión</a>
-          </p>
+      <div class="auth-trust-badges">
+        <div class="trust-badge">
+          <i class="bi bi-shield-fill-check"></i>
+          <span>Compra segura<br><small>Tus datos protegidos</small></span>
+        </div>
+        <div class="trust-badge">
+          <i class="bi bi-truck"></i>
+          <span>Envíos rápidos<br><small>A donde estés</small></span>
+        </div>
+        <div class="trust-badge">
+          <i class="bi bi-star-fill"></i>
+          <span>Mejores ofertas<br><small>Siempre para ti</small></span>
         </div>
       </div>
+    </div>
+
+    <!-- Lado derecho: Formulario -->
+    <div class="col-md-7 auth-right">
+      <div class="text-center mb-3">
+        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+          <i class="bi bi-person-fill text-white" style="font-size:1.4rem"></i>
+        </div>
+        <h2 class="auth-title">Crear cuenta</h2>
+        <p class="auth-subtitle">Únete a <strong style="color:var(--blue)">3Market</strong> y disfruta de los mejores productos</p>
+      </div>
+
+      <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
+
+      <form th:action="@{/auth/register}" method="post" th:object="${registerDto}">
+        <div class="mb-3 form-field-icon">
+          <i class="bi bi-person field-icon"></i>
+          <input type="text" th:field="*{fullName}" class="form-control"
+                 placeholder="Nombre completo" required/>
+        </div>
+        <div class="mb-3 form-field-icon">
+          <i class="bi bi-at field-icon"></i>
+          <input type="text" th:field="*{username}" class="form-control"
+                 placeholder="Usuario" required/>
+        </div>
+        <div class="mb-3 form-field-icon">
+          <i class="bi bi-envelope field-icon"></i>
+          <input type="email" th:field="*{email}" class="form-control"
+                 placeholder="Correo electrónico" required/>
+        </div>
+        <div class="mb-3 form-field-icon">
+          <i class="bi bi-lock field-icon"></i>
+          <input type="password" th:field="*{password}" id="regPass" class="form-control"
+                 placeholder="Contraseña (mín. 6 caracteres)" required minlength="6"/>
+          <button type="button" class="eye-toggle" onclick="togglePass('regPass', this)">
+            <i class="bi bi-eye-slash"></i>
+          </button>
+        </div>
+        <button type="submit" class="btn btn-auth-primary w-100">Registrarme</button>
+      </form>
+
+      <div class="divider-or">o</div>
+
+      <p class="text-center mb-0" style="font-size:.85rem;color:var(--text-muted)">
+        ¿Ya tienes una cuenta?
+        <a th:href="@{/auth/login}" style="color:var(--blue);font-weight:600">Inicia sesión</a>
+      </p>
     </div>
   </div>
 </div>
 
 <th:block th:replace="~{fragments/nav :: scripts}"/>
+<script>
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  const icon = btn.querySelector('i');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'bi bi-eye';
+  } else {
+    inp.type = 'password';
+    icon.className = 'bi bi-eye-slash';
+  }
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Mis Productos – 3Market</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="section-title mb-0">
+      <i class="bi bi-box-seam me-2" style="color:var(--blue)"></i>Gestión de Productos
+    </h3>
+    <a th:href="@{/vendedor/products/new}" class="btn btn-primary-3m d-flex align-items-center gap-2">
+      <i class="bi bi-plus-circle-fill"></i> Nuevo Producto
+    </a>
+  </div>
+
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show py-2">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <div class="panel-card">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th class="text-end">Precio</th>
+            <th class="text-center">Stock</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="product : ${products}">
+            <td class="text-muted small" th:text="${product.id}"></td>
+            <td>
+              <div style="width:44px;height:44px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;overflow:hidden">
+                <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                     th:src="${product.imageUrl}" style="max-height:40px;object-fit:contain" alt=""/>
+                <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
+                   class="bi bi-image text-muted"></i>
+              </div>
+            </td>
+            <td class="fw-semibold" th:text="${product.name}"></td>
+            <td>
+              <span class="badge bg-secondary"
+                    th:text="${product.category != null ? product.category.name : '-'}"></span>
+            </td>
+            <td class="text-end price-tag"
+                th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
+            <td class="text-center">
+              <span class="badge badge-status"
+                    th:classappend="${product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning text-dark' : 'bg-danger'}"
+                    th:text="${product.stock}"></span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-status"
+                    th:classappend="${product.active ? 'bg-success' : 'bg-secondary'}"
+                    th:text="${product.active ? 'Activo' : 'Inactivo'}"></span>
+            </td>
+            <td class="text-center">
+              <div class="d-flex gap-1 justify-content-center">
+                <a th:href="@{/vendedor/products/{id}/edit(id=${product.id})}"
+                   class="btn btn-sm btn-outline-primary" title="Editar">
+                  <i class="bi bi-pencil-fill"></i>
+                </a>
+                <form th:action="@{/vendedor/products/{id}/toggle(id=${product.id})}" method="post">
+                  <button type="submit" class="btn btn-sm"
+                          th:classappend="${product.active ? 'btn-outline-warning' : 'btn-outline-success'}"
+                          th:title="${product.active ? 'Desactivar' : 'Activar'}">
+                    <i th:classappend="${product.active ? 'bi bi-toggle-on' : 'bi bi-toggle-off'}"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <a th:href="@{/home}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>Volver a la tienda
+    </a>
+  </div>
+</div>
+
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

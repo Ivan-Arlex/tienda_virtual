@@ -9,12 +9,17 @@ import com.unipacifico_ingenieria_sistemas.tienda_virtual.model.enums.RoleType;
 import com.unipacifico_ingenieria_sistemas.tienda_virtual.repository.RoleRepository;
 import com.unipacifico_ingenieria_sistemas.tienda_virtual.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
+    public Optional<UserDto> getUsuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Validamos si no hay sesión activa o si es el usuario anónimo por defecto de Spring
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return Optional.empty();
+        }
+
+        String username = auth.getName();
+        
+        // Buscamos en la BD y mapeamos los campos al DTO
+       // return userMapper.toDto(userRepository.findByUsername(username));
+        return userRepository.findByUsername(username).map(user->userMapper.toDto(Optional.of(user)));
+    }
     public UserDto register(RegisterDto dto) {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new IllegalArgumentException("El nombre de usuario ya existe");
@@ -37,7 +56,7 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("Rol CLIENTE no encontrado"));
 
         Users users = userMapper.toEntity(dto, passwordEncoder.encode(dto.getPassword()), Set.of(clientRole));
-        return userMapper.toDto(userRepository.save(users));
+        return userMapper.toDto((Optional<Users>) Optional.ofNullable(userRepository.save(users)));
     }
 
     public UserDto findByUsername(String username) {

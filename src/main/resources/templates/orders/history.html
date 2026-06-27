@@ -2,30 +2,30 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <th:block th:replace="~{fragments/nav :: head-includes}"/>
-  <title>Mis Pedidos - TiendaVirtual</title>
+  <title>Mis Pedidos – 3Market</title>
 </head>
 <body>
 
 <th:block th:replace="~{fragments/nav :: navbar}"/>
 
 <div class="container py-4">
-  <h3 class="fw-semibold mb-4"><i class="bi bi-bag-heart-fill text-primary"></i> Mis Pedidos</h3>
+  <h3 class="section-title"><i class="bi bi-bag-heart-fill me-2" style="color:var(--blue)"></i>Mis Pedidos</h3>
 
-  <div th:if="${#lists.isEmpty(orders)}" class="text-center py-5 text-muted">
-    <i class="bi bi-bag-x fs-1"></i>
-    <p class="mt-2">Aún no tienes pedidos.</p>
-    <a th:href="@{/catalog}" class="btn btn-primary">Ir al catálogo</a>
+  <div th:if="${#lists.isEmpty(orders)}" class="text-center py-5">
+    <i class="bi bi-bag-x" style="font-size:4rem;color:#cbd5e1"></i>
+    <p class="text-muted mt-3">Aún no tienes pedidos.</p>
+    <a th:href="@{/catalog}" class="btn btn-primary-3m px-4">Ir al catálogo</a>
   </div>
 
   <div class="accordion" id="ordersAccordion" th:unless="${#lists.isEmpty(orders)}">
-    <div class="accordion-item mb-3 shadow-sm border-0 rounded"
+    <div class="accordion-item mb-3 shadow-sm"
          th:each="order : ${orders}">
       <h2 class="accordion-header">
-        <button class="accordion-button collapsed rounded fw-semibold"
+        <button class="accordion-button collapsed fw-semibold"
                 type="button" data-bs-toggle="collapse"
                 th:data-bs-target="${'#order-' + order.id}">
-          <span class="me-3">Pedido #<span th:text="${order.id}"></span></span>
-          <span class="badge me-3"
+          <span class="me-3">Pedido #<strong th:text="${order.id}"></strong></span>
+          <span class="badge badge-status me-3"
                 th:classappend="${order.status.name() == 'PAGADO' ? 'bg-success' :
                                   order.status.name() == 'PENDIENTE' ? 'bg-warning text-dark' :
                                   order.status.name() == 'ENVIADO' ? 'bg-info' :
@@ -33,47 +33,45 @@
                 th:text="${order.status}"></span>
           <span class="text-muted fw-normal small me-3"
                 th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
-          <span class="fw-bold text-primary"
+          <span class="price-tag"
                 th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}"></span>
         </button>
       </h2>
       <div th:id="${'order-' + order.id}" class="accordion-collapse collapse">
         <div class="accordion-body">
           <table class="table table-sm mb-3">
-            <thead class="table-light"><tr>
-              <th>Producto</th>
-              <th class="text-center">Cant.</th>
-              <th class="text-end">P. Unit.</th>
-              <th class="text-end">Subtotal</th>
-            </tr></thead>
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-end">P. Unit.</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
             <tbody>
               <tr th:each="item : ${order.items}">
                 <td th:text="${item.productName}"></td>
                 <td class="text-center" th:text="${item.quantity}"></td>
-                <td class="text-end"
-                    th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
-                <td class="text-end"
-                    th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></td>
+                <td class="text-end" th:text="${'$' + #numbers.formatDecimal(item.unitPrice, 1, 2)}"></td>
+                <td class="text-end fw-bold" th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}"></td>
               </tr>
             </tbody>
           </table>
-          <div th:if="${order.payment != null}" class="alert alert-success py-2 mb-2">
-            <i class="bi bi-shield-check"></i>
+          <div th:if="${order.payment != null}" class="alert alert-success py-2 mb-2" style="font-size:.85rem">
+            <i class="bi bi-shield-check me-1"></i>
             Pagado con <strong th:text="${order.payment.method}"></strong>
             el <span th:text="${#temporals.format(order.payment.createdAt, 'dd/MM/yyyy')}"></span>
           </div>
           <a th:href="@{/orders/{id}/confirm(id=${order.id})}"
-             class="btn btn-outline-primary btn-sm">
-            Ver detalle completo
-          </a>
+             class="btn btn-sm btn-outline-3m">Ver detalle completo</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<footer class="bg-dark text-white text-center py-3 mt-4">
-  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
 </footer>
 
 <th:block th:replace="~{fragments/nav :: scripts}"/>

@@ -3,109 +3,128 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <th:block th:replace="~{fragments/nav :: head-includes}"/>
-  <title>Catálogo - TiendaVirtual</title>
+  <title>Catálogo – 3Market</title>
 </head>
 <body>
 
 <th:block th:replace="~{fragments/nav :: navbar}"/>
 
 <div class="container py-4">
-  <div class="row">
 
-    <!-- Sidebar de filtros -->
-    <div class="col-md-3 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white fw-semibold">
-          <i class="bi bi-funnel-fill"></i> Filtrar
+  <!-- Header de sección -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h3 class="section-title mb-0">
+      <span th:if="${search != null and !#strings.isEmpty(search)}">
+        Resultados para: "<span class="text-gradient" th:text="${search}"></span>"
+      </span>
+      <span th:unless="${search != null and !#strings.isEmpty(search)}">Catálogo de Productos</span>
+    </h3>
+    <!-- Botón registrar producto solo para Admin / Vendedor -->
+    <sec:authorize access="hasAnyRole('ADMIN','VENDEDOR')">
+      <a th:href="@{/vendedor/products/new}" class="btn-register-product d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle-fill"></i> Registrar producto
+      </a>
+    </sec:authorize>
+  </div>
+
+  <div class="row g-4">
+    <!-- Sidebar filtros -->
+    <div class="col-md-3">
+      <div class="filter-card">
+        <div class="filter-header">
+          <i class="bi bi-funnel-fill me-2"></i>Filtrar
         </div>
-        <div class="card-body">
+        <div class="p-3">
           <form th:action="@{/catalog}" method="get">
             <div class="mb-3">
-              <label class="form-label small fw-semibold">Buscar</label>
+              <label class="form-label fw-semibold small">Buscar</label>
               <input type="text" name="search" class="form-control form-control-sm"
                      placeholder="Nombre del producto..." th:value="${search}"/>
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-semibold">Categoría</label>
-              <div th:each="cat : ${categories}">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="categoryId"
-                         th:value="${cat.id}"
-                         th:checked="${selectedCategory == cat.id}"
-                         th:id="${'cat-' + cat.id}"/>
-                  <label class="form-check-label small" th:for="${'cat-' + cat.id}"
-                         th:text="${cat.name}"></label>
-                </div>
+              <label class="form-label fw-semibold small">Categoría</label>
+              <div class="form-check" th:each="cat : ${categories}">
+                <input class="form-check-input" type="radio" name="categoryId"
+                       th:value="${cat.id}"
+                       th:checked="${selectedCategory == cat.id}"
+                       th:id="${'cat-' + cat.id}"/>
+                <label class="form-check-label small" th:for="${'cat-' + cat.id}"
+                       th:text="${cat.name}"></label>
               </div>
             </div>
             <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary btn-sm">Aplicar</button>
-              <a th:href="@{/catalog}" class="btn btn-outline-secondary btn-sm">Limpiar</a>
+              <button type="submit" class="btn btn-sm btn-primary-3m">Aplicar</button>
+              <a th:href="@{/catalog}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
             </div>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- Lista de productos -->
+    <!-- Grid de productos -->
     <div class="col-md-9">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0 fw-semibold">
-          <span th:if="${search != null}">Resultados para: "<span th:text="${search}"></span>"</span>
-          <span th:unless="${search != null}">Catálogo de Productos</span>
-        </h4>
-        <small class="text-muted" th:text="${#lists.size(products)} + ' productos'"></small>
+        <small class="text-muted">
+          <strong th:text="${#lists.size(products)}"></strong> productos encontrados
+        </small>
       </div>
 
       <div class="row g-3">
-        <div class="col-md-4" th:each="product : ${products}">
-          <div class="card h-100 shadow-sm product-card">
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:160px">
+        <div class="col-6 col-md-4" th:each="product : ${products}">
+          <div class="card product-card h-100 border-0 shadow-sm">
+            <div class="product-img-wrap">
               <img th:if="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
-                   th:src="${product.imageUrl}" class="img-fluid" style="max-height:140px; object-fit:contain" alt=""/>
+                   th:src="${product.imageUrl}" alt=""/>
               <i th:unless="${product.imageUrl != null and !product.imageUrl.isEmpty()}"
-                 class="bi bi-box-seam fs-1 text-secondary"></i>
+                 class="bi bi-box-seam" style="font-size:3rem;color:#cbd5e1"></i>
             </div>
-            <div class="card-body d-flex flex-column">
-              <span class="badge bg-secondary small" th:text="${product.categoryName}"></span>
-              <h6 class="card-title fw-semibold mt-1" th:text="${product.name}"></h6>
-              <p class="card-text text-muted small flex-grow-1"
-                 th:text="${#strings.abbreviate(product.description, 70)}"></p>
+            <div class="card-body d-flex flex-column p-3">
+              <span class="badge bg-secondary w-fit mb-1" style="font-size:.7rem"
+                    th:text="${product.categoryName}"></span>
+              <h6 class="fw-bold mb-1" style="font-size:.88rem" th:text="${product.name}"></h6>
+              <p class="text-muted flex-grow-1 mb-2" style="font-size:.78rem"
+                 th:text="${#strings.abbreviate(product.description, 65)}"></p>
               <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold text-primary"
+                <span class="price-tag"
                       th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></span>
-                <small class="text-muted" th:text="'Stock: ' + ${product.stock}"></small>
+                <small class="text-muted" style="font-size:.75rem"
+                       th:text="'Stock: ' + ${product.stock}"></small>
               </div>
             </div>
-            <div class="card-footer bg-transparent border-0 d-flex gap-2">
+            <div class="card-footer bg-transparent border-0 d-flex gap-2 p-3 pt-0">
               <a th:href="@{/products/{id}(id=${product.id})}"
-                 class="btn btn-outline-primary btn-sm flex-grow-1">Detalle</a>
-              <sec:authorize access="isAuthenticated()">
+                 class="btn btn-outline-3m btn-sm flex-grow-1">Detalle</a>
+              <sec:authorize access="hasRole('CLIENTE')">
                 <form th:action="@{/cart/add}" method="post">
                   <input type="hidden" name="productId" th:value="${product.id}"/>
                   <input type="hidden" name="quantity" value="1"/>
-                  <button type="submit" class="btn btn-primary btn-sm"
+                  <button type="submit" class="btn btn-primary-3m btn-sm"
                           th:disabled="${product.stock == 0}">
                     <i class="bi bi-cart-plus"></i>
                   </button>
                 </form>
+              </sec:authorize>
+              <sec:authorize access="isAnonymous()">
+                <a th:href="@{/auth/login}" class="btn btn-primary-3m btn-sm">
+                  <i class="bi bi-cart-plus"></i>
+                </a>
               </sec:authorize>
             </div>
           </div>
         </div>
       </div>
 
-      <div th:if="${#lists.isEmpty(products)}" class="text-center py-5 text-muted">
-        <i class="bi bi-search fs-1"></i>
-        <p class="mt-2">No se encontraron productos.</p>
-        <a th:href="@{/catalog}" class="btn btn-outline-primary btn-sm">Ver todos</a>
+      <div th:if="${#lists.isEmpty(products)}" class="text-center py-5">
+        <i class="bi bi-search" style="font-size:3rem;color:#cbd5e1"></i>
+        <p class="text-muted mt-2">No se encontraron productos.</p>
+        <a th:href="@{/catalog}" class="btn btn-outline-3m btn-sm">Ver todos</a>
       </div>
     </div>
   </div>
 </div>
 
-<footer class="bg-dark text-white text-center py-3 mt-4">
-  <p class="mb-0 small">© 2026 TiendaVirtual</p>
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
 </footer>
 
 <th:block th:replace="~{fragments/nav :: scripts}"/>

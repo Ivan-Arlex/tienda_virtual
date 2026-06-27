@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title>Pedidos – Admin 3Market</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container-fluid py-4">
+  <div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-md-2">
+      <div class="admin-sidebar">
+        <div class="sidebar-header"><i class="bi bi-speedometer2 me-2"></i>Admin Panel</div>
+        <div class="list-group list-group-flush">
+          <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a th:href="@{/admin/products}" class="list-group-item list-group-item-action">
+            <i class="bi bi-box-seam"></i> Productos
+          </a>
+          <a th:href="@{/admin/categories}" class="list-group-item list-group-item-action">
+            <i class="bi bi-tags"></i> Categorías
+          </a>
+          <a th:href="@{/admin/orders}" class="list-group-item list-group-item-action active">
+            <i class="bi bi-bag-check"></i> Pedidos
+          </a>
+          <a th:href="@{/home}" class="list-group-item list-group-item-action text-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a tienda
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="col-md-10">
+      <h3 class="section-title mb-4">Gestión de Pedidos</h3>
+
+      <div th:if="${success}" class="alert alert-success alert-dismissible fade show py-2">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <div class="panel-card">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Email</th>
+                <th class="text-end">Total</th>
+                <th class="text-center">Estado</th>
+                <th>Fecha</th>
+                <th class="text-center">Cambiar estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="order : ${orders}">
+                <td class="fw-bold" th:text="${order.id}"></td>
+                <td th:text="${order.clientFullName}"></td>
+                <td class="text-muted small" th:text="${order.clientEmail}"></td>
+                <td class="text-end price-tag"
+                    th:text="${'$' + #numbers.formatDecimal(order.total, 1, 2)}"></td>
+                <td class="text-center">
+                  <span class="badge badge-status"
+                        th:classappend="${order.status.name() == 'PAGADO' ? 'bg-success' :
+                                          order.status.name() == 'PENDIENTE' ? 'bg-warning text-dark' :
+                                          order.status.name() == 'ENVIADO' ? 'bg-info' :
+                                          order.status.name() == 'ENTREGADO' ? 'bg-primary' : 'bg-danger'}"
+                        th:text="${order.status}"></span>
+                </td>
+                <td class="small text-muted"
+                    th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="text-center">
+                  <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post"
+                        class="d-flex gap-1 justify-content-center align-items-center">
+                    <select name="status" class="form-select form-select-sm" style="width:130px;border-radius:8px">
+                      <option th:each="s : ${statuses}"
+                              th:value="${s}"
+                              th:text="${s}"
+                              th:selected="${s == order.status}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Actualizar">
+                      <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+</body>
+</html>

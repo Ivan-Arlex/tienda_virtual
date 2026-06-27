@@ -5,23 +5,25 @@ import com.unipacifico_ingenieria_sistemas.tienda_virtual.dto.UserDto;
 import com.unipacifico_ingenieria_sistemas.tienda_virtual.model.Role;
 import com.unipacifico_ingenieria_sistemas.tienda_virtual.model.Users;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
 
-    public UserDto toDto(Users users) {
+    public UserDto toDto(Optional<Users> users) {
         if (users == null) return null;
-        Set<String> roles = users.getRoles().stream()
+        Set<String> roles = optional.getRoles().stream()
             .map(role -> role.getName().name())
             .collect(Collectors.toSet());
         return UserDto.builder()
-            .id(users.getId())
-            .username(users.getUsername())
+            .id(optional.getId())
+            .username(optional.getUsername())
             .email(users.getEmail())
-            .fullName(users.getFullName())
-            .enabled(users.isEnabled())
+            .fullName(optional.getFullName())
+            .enabled(optional.isEnabled())
             .roles(roles)
             .build();
     }

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{fragments/nav :: head-includes}"/>
+  <title th:text="${productDto.id != null ? 'Editar' : 'Registrar'} + ' Producto – 3Market'">Producto</title>
+</head>
+<body>
+
+<th:block th:replace="~{fragments/nav :: navbar}"/>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <nav class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a th:href="${cancelUrl}" style="color:var(--blue)">Mis Productos</a>
+          </li>
+          <li class="breadcrumb-item active"
+              th:text="${productDto.id != null ? 'Editar producto' : 'Registrar producto'}"></li>
+        </ol>
+      </nav>
+
+      <div class="panel-card">
+        <div class="panel-header">
+          <span>
+            <i class="bi bi-box-seam me-2" style="color:var(--blue)"></i>
+            <span th:text="${productDto.id != null ? 'Editar Producto' : 'Registrar Nuevo Producto'}"></span>
+          </span>
+        </div>
+
+        <div class="p-4">
+          <div th:if="${error}" class="alert alert-danger py-2" th:text="${error}"></div>
+
+          <form th:action="${formAction}" method="post" th:object="${productDto}"
+                enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="row g-4">
+              <!-- Imagen -->
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Imagen del producto</label>
+                <div class="img-preview-wrap mb-2" id="imgPreview"
+                     onclick="document.getElementById('imageFile').click()">
+                  <img th:if="${productDto.imageUrl != null and !productDto.imageUrl.isEmpty()}"
+                       th:src="${productDto.imageUrl}" id="previewImg" alt="Vista previa"/>
+                  <div th:unless="${productDto.imageUrl != null and !productDto.imageUrl.isEmpty()}"
+                       id="previewPlaceholder" class="text-center text-muted">
+                    <i class="bi bi-cloud-arrow-up-fill" style="font-size:2.5rem;color:#cbd5e1"></i>
+                    <p class="small mb-0 mt-1">Clic para subir imagen</p>
+                    <p class="small mb-0" style="font-size:.72rem">JPG, PNG, WEBP · Máx. 10 MB</p>
+                  </div>
+                </div>
+                <input type="file" id="imageFile" name="imageFile" accept="image/*"
+                       class="d-none" onchange="previewImage(this)"/>
+                <small class="text-muted d-block text-center" style="font-size:.75rem">
+                  Clic en el recuadro para cambiar la imagen
+                </small>
+                <input type="hidden" th:field="*{imageUrl}"/>
+              </div>
+
+              <!-- Datos -->
+              <div class="col-md-8">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Nombre del producto *</label>
+                    <input type="text" th:field="*{name}" class="form-control" required
+                           placeholder="Nombre descriptivo del producto"/>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Categoría *</label>
+                    <select th:field="*{categoryId}" class="form-select" required>
+                      <option value="">-- Seleccionar categoría --</option>
+                      <option th:each="cat : ${categories}"
+                              th:value="${cat.id}"
+                              th:text="${cat.name}"></option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold">Precio *</label>
+                    <div class="input-group">
+                      <span class="input-group-text">$</span>
+                      <input type="number" th:field="*{price}" class="form-control"
+                             step="0.01" min="0" required placeholder="0.00"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold">Stock *</label>
+                    <input type="number" th:field="*{stock}" class="form-control"
+                           min="0" required placeholder="Unidades disponibles"/>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Estado</label>
+                    <div class="form-check form-switch mt-1">
+                      <input class="form-check-input" type="checkbox" th:field="*{active}"
+                             role="switch" id="activeSwitch"/>
+                      <label class="form-check-label" for="activeSwitch">Producto activo</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Descripción</label>
+                <textarea th:field="*{description}" class="form-control" rows="3"
+                          placeholder="Descripción detallada del producto"></textarea>
+              </div>
+            </div>
+
+            <hr class="my-4"/>
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-primary-3m px-4">
+                <i class="bi bi-floppy-fill me-1"></i>Guardar producto
+              </button>
+              <a th:href="${cancelUrl}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer-3m">
+  <p class="mb-0">© 2026 <strong style="color:var(--teal)">3Market</strong> · Universidad del Pacífico</p>
+</footer>
+
+<th:block th:replace="~{fragments/nav :: scripts}"/>
+<script>
+function previewImage(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const preview = document.getElementById('previewImg');
+    const placeholder = document.getElementById('previewPlaceholder');
+    if (preview) {
+      preview.src = e.target.result;
+    } else {
+      const img = document.createElement('img');
+      img.id = 'previewImg';
+      img.src = e.target.result;
+      img.style.maxHeight = '120px';
+      img.style.objectFit = 'contain';
+      if (placeholder) placeholder.style.display = 'none';
+      document.getElementById('imgPreview').appendChild(img);
+    }
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+</script>
+</body>
+</html>
